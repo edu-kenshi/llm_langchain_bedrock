@@ -41,4 +41,16 @@ def add(a: float, b: float) -> str:
     logger.info(f'Tool 1 add 호출: {a} + {b} = {result}')
     return f'계산 결과: {a} + {b} = {result}'
 
+## Tool 2 : get_time 서버측 현재시간
+def get_time() -> str:
+    '''
+    서버측 현재 시간을 조회
+
+    Returns
+        현재 시간 문자열
+    '''
+    cur_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f'Tool 2 get_time 호출: {cur_time}')
+    return f'현재 시간: {cur_time}'
+
 # 6. 서버 가동
