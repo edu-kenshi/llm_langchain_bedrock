@@ -78,6 +78,11 @@ class BedrockMCPAgent:
         # 함수 내부에 함수가 존재 => 내부함수, 함수 내부에서만 사용 가능, 외부사용 X
         def call_agent(state:MessagesState) -> dict:
             '''LLM 호출하여 TOOL 선택, 응답 생성'''
+            messages = state['messages']
+            # 필요하면 퓨샷등 추가
+            res      = llm_with_tools.invoke( messages )
+            # 응답 내용 메세지로 구성            
+            return {'messages':[res]}
             pass
         # 툴 노드 생성
         tool_node = ToolNode(self.tools)
@@ -87,8 +92,15 @@ class BedrockMCPAgent:
         # 4. 엣지(규칙, 순서, 시작, 종료등) 설정(정의)
         # 시작점
         workflow.set_entry_point('agent') # llm 일차 판단
-        def 조건부함수()->str:
+        def 조건부함수(state:MessagesState)->str:
             '''tool_calls 값 체크하여 툴로 진행, 끝낼지 판단'''
+            messages = state['messages']
+            # 마지막 메세지
+            last_msg = messages[-1]
+            if hasattr(last_msg, 'tool_calls') and last_msg.tool_calls:
+                # 도구를 사용하라는 의미
+                return 'tools'
+            return 'end'
             pass
 
         # 판단 -> 조건부
