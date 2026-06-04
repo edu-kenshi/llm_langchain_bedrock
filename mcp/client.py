@@ -25,6 +25,20 @@ class MCPClient:
     # 실제 일을 수행하는 함수
     async def run(self):
         print(f'MCP Server 접속중...')
+        # Server 접속시 필요한 정보 세팅
+        server_params = StdioServerParameters(
+            command = sys.executable,
+            args    = [self.server_script],
+            env     = None
+        )
+        print(f'sys.executable {sys.executable} server_script {self.server_script}')
+        # 접속 -> I/O -> 예외상황 발생될수 있음
+        try:
+            async with stdio_client(server_params) as (read, write):
+                print(f'서버측으로부터 입력, 출력에 대한 객체 획득')
+
+        except Exception as e:
+            print( f'MCP Server 접속 오류 : {e}' )
         pass
 
 # 3. 비동기 main 함수 구성
