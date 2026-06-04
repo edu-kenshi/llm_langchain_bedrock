@@ -44,11 +44,30 @@ class MCPClient:
                     print(f'MCP 서버측에 도구 목록 요청')
                     res = await session.list_tools()
                     self.tools = res.tools
-                    print(f'{len(self.tools)}개의 도구 확인됨.', self.tools[0])
+                    print(f'{len(self.tools)}개의 도구 확인됨.')#, self.tools[0])
+                    for i, tool in enumerate(self.tools, 1):
+                        print( f'   {i}. {tool.name}')
+                        print( f'   설명: {tool.description}')
+                        # 파라미터(매개변수) 정보 추출 => 스키마 => 매개변수명, 타입
+                        if hasattr(tool, "inputSchema") and tool.inputSchema: # 해당맴버가 있는가? -> 값은 있는가?
+                            props = tool.inputSchema.get('properties', {}) # 키->값 추출 (인덱싱), 비워있는 경우 대비 초기값 부여
+                            if props:
+                                print( f'   입력: { ", ".join(props.keys()) } ') # a, b
+
+                        print('-'*30 + '\n')
+
+                    print('\n'+'-'*30)
+                    print('도구 호출 테스트')
+                    print('-'*30 + '\n')
+                    await self.call_tool( session, "add", {"a":100, "b":5})
 
 
         except Exception as e:
             print( f'MCP Server 접속 오류 : {e}' )
+        pass
+    
+    # MCP 서버에 존재하는 도구를 호출하는 함수
+    async def call_tool(self, session, tool_name: str, arguments: dict):
         pass
 
 # 3. 비동기 main 함수 구성
