@@ -70,6 +70,40 @@ class BedrockMCPAgent:
     
     # 그래프 구성
     def _setup_graph( self ):
+        # 1. llm에 MCP 도구들을 바인딩 -> llm_with_tools 구성
+        llm_with_tools = self.llm.bind_tools(self.tools)
+        # 2. 상태(공유 메모리)를 가진 그래프 생성
+        workflow = StateGraph(MessagesState)
+        # 3. 그래프 노드 추가 ( MCP 도구 호출,  LLM 도구 )
+        # 함수 내부에 함수가 존재 => 내부함수, 함수 내부에서만 사용 가능, 외부사용 X
+        def call_agent(state:MessagesState) -> dict:
+            '''LLM 호출하여 TOOL 선택, 응답 생성'''
+            pass
+        # 툴 노드 생성
+        tool_node = ToolNode(self.tools)
+        workflow.add_node('agent',  call_agent)
+        workflow.add_node('tools',  tool_node)
+
+        # 4. 엣지(규칙, 순서, 시작, 종료등) 설정(정의)
+        # 시작점
+        workflow.set_entry_point('agent') # llm 일차 판단
+        def 조건부함수()->str:
+            '''tool_calls 값 체크하여 툴로 진행, 끝낼지 판단'''
+            pass
+
+        # 판단 -> 조건부
+        workflow.add_conditional_edges(
+            'agent',
+            조건부함수,
+            {
+                "tools":'tools',
+                "end"  : END
+            }
+        )
+        # 방향성
+        workflow.add_edge('tools', 'agent') # tools 노드 -> agent 노드로 이동
+        # 5. 그래프 컴파일
+        self.graph = workflow.compile()
         pass
     
     # 사용자 요청 처리(프럼프트 처리)
