@@ -35,7 +35,9 @@ class MCPClient:
         # 접속 -> I/O -> 예외상황 발생될수 있음
         try:
             async with stdio_client(server_params) as (read, write):
-                print(f'서버측으로부터 입력, 출력에 대한 객체 획득')
+                async with ClientSession(read, write) as session:
+                    print(f'MCP 서버 연결 성공 : 서버측으로부터 입력, 출력에 대한 객체 획득')
+
 
         except Exception as e:
             print( f'MCP Server 접속 오류 : {e}' )
