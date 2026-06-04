@@ -89,7 +89,16 @@ def list_note() -> str:
     Returns
         저장된 모든 메모
     '''
-    pass
+    if not note_memory:
+        logger.info(f"list_note 호출: 저장된 메모 없음")
+        return "저장된 메모 없음"
+
+    # 존재하면 => 하나의 말뭉치로 구성 반한 (컨셉)
+    notes = "\n".join([
+        f'- id: {note_id},  content: {value["content"]}'
+        for note_id, value in note_memory.items()
+    ])
+    return f'저장된 모든 메모:\n{notes}'
 
 ## Tool 5 : delete_note 메모 삭제
 def delete_note(note_id: str) -> str:
