@@ -124,3 +124,9 @@ def delete_note(note_id: str) -> str:
 ## Tool 6 : rag_search 검색증강
 
 # 6. 서버 가동
+if __name__ == '__main__':
+    logger.info('MCPServer 가동 중...')
+    logger.info('STDIO 모드로 가동 중...')
+
+    # stdio 모드로 구동
+    mcp.run( transport="stdio")
