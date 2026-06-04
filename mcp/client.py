@@ -59,8 +59,17 @@ class MCPClient:
                     print('\n'+'-'*30)
                     print('도구 호출 테스트')
                     print('-'*30 + '\n')
-                    await self.call_tool( session, "add", {"a":100, "b":5})                    
+                    await self.call_tool( session, "add",         {"a":100, "b":5} )
+                    await self.call_tool( session, "get_time",    {} )
+                    await self.call_tool( session, "save_note",   {"note_id":"de-001", "note_content":"MCP 1"} )
+                    await self.call_tool( session, "save_note",   {"note_id":"de-002", "note_content":"MCP 2"} )
+                    await self.call_tool( session, "list_note",   {} )
+                    await self.call_tool( session, "delete_note", {"note_id":"de-001"} )
+                    await self.call_tool( session, "list_note",   {} )
 
+                    print('\n'+'-'*30)
+                    print('도구 호출 테스트 완료')
+                    print('-'*30 + '\n')
 
         except Exception as e:
             print( f'MCP Server 접속 오류 : {e}' )
@@ -69,17 +78,19 @@ class MCPClient:
     # MCP 서버에 존재하는 도구를 호출하는 함수
     async def call_tool(self, session, tool_name: str, arguments: dict):
         try:
+            print(f' {tool_name} 도구 사용')
+            print(f' 인자 {arguments}')
             result = await session.call_tool(tool_name, arguments)
             # 결과 출력
-            print(f'결과출력 : {result}')
+            # print(f'결과출력 : {result}')
             if hasattr(result, 'content') and result.content:
                 for content in result.content:
                     if hasattr(content, 'text'):
-                        print(f" 결과 : \n{content.text}\n")
+                        print(f" 결과 : \n {content.text}\n")
                     else: 
-                        print(f" 결과 : \n{content}\n")
+                        print(f" 결과 : \n {content}\n")
             else:
-                print(f" 결과 : \n{result}\n")
+                print(f" 결과 : \n {result}\n")
             return result
         except Exception as e:
             print( f'에러 발생 {e}' )
