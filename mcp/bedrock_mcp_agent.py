@@ -35,11 +35,21 @@ class BedrockMCPAgent:
 
     # 초기화
     async def initialize( self ):
+        # MCP Tool 로드
+        print(f'MCP Server와 연결중..')
+        # mcp_tools_adapter.py와 작업 기술
 
         # LLM 생성
+        print(f'LLM 초기화 중..')
         self._init_llm()
 
-        pass
+        # langgraph 기반 에이전트 구성
+        print(f'langgraph agent 구성 중..')
+        self._setup_graph()
+
+        print(f'초기화 완료\n 프럼프트 입력 대기..')
+        return self
+    
     # llm 생성
     async def _init_llm(self):
         try:
@@ -57,7 +67,10 @@ class BedrockMCPAgent:
             print('Bedrock LLM 객체 생성 실패 {e}')
             pass
         pass
+    
     # 그래프 구성
+    def _setup_graph( self ):
+        pass
     
     # 사용자 요청 처리(프럼프트 처리)
     
