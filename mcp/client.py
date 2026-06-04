@@ -1,5 +1,6 @@
 '''
 MCP Client
+    - 구동시 관련 파일 외에는 프로젝트 폴더에 없어야 함 => 실행하는 루트 디렉토리를 클리어 하게 사용
 MCP Server 와 통신
 '''
 # 1. 모듈 가져오기
@@ -43,7 +44,7 @@ class MCPClient:
                     print(f'MCP 서버측에 도구 목록 요청')
                     res = await session.list_tools()
                     self.tools = res.tools
-                    print(f'{len(self.tools)}개의 도구 확인됨.')
+                    print(f'{len(self.tools)}개의 도구 확인됨.', self.tools[0])
 
 
         except Exception as e:
