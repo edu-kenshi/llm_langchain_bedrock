@@ -53,4 +53,57 @@ def get_time() -> str:
     logger.info(f'Tool 2 get_time 호출: {cur_time}')
     return f'현재 시간: {cur_time}'
 
+# CRUD 도구
+## Tool 3 : save_note 메모 저장/업데이트
+def save_note(note_id: str, note_content: str) -> str:
+    '''
+    메모 저장
+
+    Args:
+        note_id: 메모의 고유 ID, 키값
+        note_content: 메모 내용
+
+    Returns
+        저장 완료 메세지
+    '''
+    # 방어코드
+    if not note_id or not note_content: # 내용 혹은 아이디가 누락되면
+        logger.warning('필수 파라미터 누락')
+        return "Fail: 필수 파라미터 누락"
+    # 저장처리
+    note_memory[note_id] = {
+        "content"    : note_content,
+        "created_at" : datetime.now().isoformat()
+    }
+    # 로깅
+    logger.info(f"save_note 호출: note_id={note_id}")
+    # 반환
+    return f"메모 저장 완료 {note_id}"
+    pass
+
+## Tool 4 : list_note 메모 목록 조회
+def list_note() -> str:
+    '''
+    저장된 모든 메모 목록 조회
+
+    Returns
+        저장된 모든 메모
+    '''
+    pass
+
+## Tool 5 : delete_note 메모 삭제
+def delete_note(note_id: str) -> str:
+    '''
+    특정 메모 삭제
+
+    Args:
+        note_id: 메모의 고유 ID, 키값
+
+    Returns
+        현재 시간 문자열
+    '''
+    pass
+
+## Tool 6 : rag_search 검색증강
+
 # 6. 서버 가동
