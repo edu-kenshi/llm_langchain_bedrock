@@ -59,7 +59,7 @@ class MCPClient:
                     print('\n'+'-'*30)
                     print('도구 호출 테스트')
                     print('-'*30 + '\n')
-                    await self.call_tool( session, "add", {"a":100, "b":5})
+                    await self.call_tool( session, "add", {"a":100, "b":5})                    
 
 
         except Exception as e:
@@ -68,6 +68,14 @@ class MCPClient:
     
     # MCP 서버에 존재하는 도구를 호출하는 함수
     async def call_tool(self, session, tool_name: str, arguments: dict):
+        try:
+            result = await session.call_tool(tool_name, arguments)
+            # 결과 출력
+            print(f'결과출력 : {result}')
+            return result
+        except Exception as e:
+            print( f'에러 발생 {e}' )
+            raise
         pass
 
 # 3. 비동기 main 함수 구성
