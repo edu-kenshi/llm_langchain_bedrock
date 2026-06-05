@@ -221,6 +221,9 @@ if __name__ == '__main__':
         await adapter.initialize()
         # MCP tool -> langchain/langgraph tool 변환
         tools = adapter.create_langchain_tools()
+        print('도구 생성 완료')
+        for tool in tools:
+            print( f'{tool.name} ')
 
         # 해제
         await adapter.cleanup()
