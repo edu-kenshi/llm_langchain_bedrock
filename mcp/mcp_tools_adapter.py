@@ -38,12 +38,34 @@ class MCPToolAdapter:
         # 메세지가 오염되면 => 출력을 sys.stderr
         print('MCP 서버 연결중..')
         try:
-            
+            # 입력, 출력, 세션등, 여러 함수에서 사용한다면 with x
+            # MCP 서버를 접속할때 사용하는 내부 컨텍스트 객체
+            self._stdio_context = stdio_client(server_params)
+            # 내부 함수를 강제로 호출(내가 원하는 시점에 처리)
+            # 비동기, 입력/출력 스트림 연결하여 반환
+            stdio_tuple = await self._stdio_context.__aenter__()
+            # 입력/출력 스트 획득
+            if isinstance( stdio_tuple, tuple ):
+                self.read_stream, self.write_stream = stdio_tuple
+            else:
+                self.read_stream  = stdio_tuple
+                self.write_stream = stdio_tuple
+
         except Exception as e:
             print('MCP 서버 연결 실패', e)
             raise
         pass
     
+    async def cleanup(self):
+        '''입력/출력 스트림, 세션등 자원 해제(개발자 관리)'''
+        # 세션이 존재하면 -> 세션 종료
+        # 컨텍스트가 존재하면 -> 입력/출력 스트림 종료
+        try:
+            if self._stdio_context:
+                await self._stdio_context.__aexit__(None, None, None)
+        except Exception as e:
+            print('입력/출력 스트림 종료 에러', e)
+        pass
 
 # 4. 테스트
 if __name__ == '__main__':
