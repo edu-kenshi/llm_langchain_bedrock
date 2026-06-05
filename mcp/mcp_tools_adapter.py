@@ -88,4 +88,15 @@ class MCPToolAdapter:
 
 # 4. 테스트
 if __name__ == '__main__':
+    # 단위 테스트
+    async def test():
+        # 자체적으로 아답터 구성 => 툴 목록 => 함수 구성 => 해제
+        adapter = MCPToolAdapter('server.py')
+        # 초기화
+        await adapter.initialize()
+
+        # 해제
+        await adapter.cleanup()
+
+    asyncio.run( test() )
     pass
