@@ -71,17 +71,49 @@ class MCPToolAdapter:
             raise
         pass
     
+    async def call_tool(self, tool_name: str, arguments: dict) -> str:
+        '''MCP TOOL 호출'''
+        try:
+            result = await self.session.call_tool(tool_name, arguments)
+            if hasattr(result, 'content') and result.content:
+                for content in result.content:
+                    if hasattr(content, 'text'):
+                        return content.text
+            return str(result)
+        except Exception as e:
+            return f'{tool_name} 실행 오류 { str(e) }'
+
+
     # MCP tool -> langchain/langgraph tool 변환
+    # MCP서버에 등록된 도구를  랭체인 생태계의 `LLM`에서 바로 사용 할수 있도록 자동 변환해주는 함수
+    # MCP서버 도구는 스키마를  JSON 을 전달해줌(JSON-RPC)
+    # 랭체인 도구는 pydantic 적용하면 강력한 타입 검증(유효성검증) 요구할수 있도록 구성할수 있음
+    # 목표 어떤 도구던지 자동 변환 해주는 함수 구성
     def create_langchain_tools(self) -> list:
         langchain_tools = list()
 
-        # 툴 순회
+        # 툴 순회 -> 범용적 표현 -> 본 코드를 그냥 사용하면 다 적용됨
         for mcp_tool in self.mcp_tools:
             # 툴 이름
             tool_name = mcp_tool.name
+            # 툴 설명
             tool_description = mcp_tool.description
             print( tool_name, tool_description )
-            # 툴 설명
+            
+            # 함수의 형태 -> 동적으로 비동기 함수(도구의 외적 형태) 생성 -> MCPClient 예시
+            # 클로저 형태로로 함수를 구성하여 각각의 함수가 독립적으로 생셩되게 구성
+            def create_tool_func(name:str):
+                async def async_tool_func(**kwarg)->str:
+                    '''동적으로 생성되는 TOOL'''
+                    return await 
+
+            tool_func = create_tool_func( tool_name )
+
+            # 함수의 스키마
+
+            # pydantic 모델 동적 적용
+
+            # StructuredTool 생성하여 랭체인 툴에 반영 적용 -> LLM이 툴에 대해 이해, 필요하면 사용(선택의 지표 제공)
             pass
 
         return langchain_tools
