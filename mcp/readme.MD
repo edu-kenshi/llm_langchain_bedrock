@@ -78,3 +78,7 @@ LANGCHAIN_PROJECT=agent-mcp-llm
 LANGCHAIN_TRACING_V2=true
 ```
 
+# 랭스미스 환경 체크 
+```
+python check_langsmith.py
+```
