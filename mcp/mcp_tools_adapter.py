@@ -71,6 +71,21 @@ class MCPToolAdapter:
             raise
         pass
     
+    # MCP tool -> langchain/langgraph tool 변환
+    def create_langchain_tools(self) -> list:
+        langchain_tools = list()
+
+        # 툴 순회
+        for mcp_tool in self.mcp_tools:
+            # 툴 이름
+            tool_name = mcp_tool.name
+            tool_description = mcp_tool.description
+            print( tool_name, tool_description )
+            # 툴 설명
+            pass
+
+        return langchain_tools
+
     async def cleanup(self):
         '''입력/출력 스트림, 세션등 자원 해제(개발자 관리)'''
         # 세션이 존재하면 -> 세션 종료
@@ -96,6 +111,8 @@ if __name__ == '__main__':
         adapter = MCPToolAdapter('server.py')
         # 초기화
         await adapter.initialize()
+        # MCP tool -> langchain/langgraph tool 변환
+        tools = adapter.create_langchain_tools()
 
         # 해제
         await adapter.cleanup()
