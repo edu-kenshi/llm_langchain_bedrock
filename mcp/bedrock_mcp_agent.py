@@ -119,6 +119,27 @@ class BedrockMCPAgent:
         pass
     
     # 사용자 요청 처리(프럼프트 처리)
+    async def process_query(self, user_input:str) -> str:
+        print(f'\n사용자 입력 : {user_input}\n')
+        # 1. 메세지 구성
+        messages = [ HumanMessage(content=user_input)]
+        # 2. 메세지 전달하여 그래프 실행
+        try:
+            # 그래프 실행
+            result   = self.graph.invoke({"messages":messages})
+            # 최종 메세지 추출 
+            last_msg = result['messages'][-1]
+            if hasattr(last_msg, 'content'):
+                res = last_msg.content
+            else:
+                res = str(last_msg)
+            print( f'\n 에이전트 응답 { res }')
+            return res
+        except Exception as e:
+            msg = f'\n 메세지 처리중 에러 발생 {e}'
+            print( msg )
+            return msg
+
     
     # 메모리 정리(뒷정리)
     pass
