@@ -39,6 +39,9 @@ class BedrockMCPAgent:
         # mcp_tools_adapter.py와 작업 기술
         self.mcp_adpater = MCPToolAdapter(self.server_script)
         await self.mcp_adpater.initialize()
+        # MCP 도구 => 랭체인 도구 매핑(StructuredTool:구조화된도구) => 전체 목록 반환
+        self.tools = self.mcp_adpater.create_langchain_tools()
+        print(f'도구 { len(self.tools) }개 로드 완료')
 
         # LLM 생성
         print(f'LLM 초기화 중..')
