@@ -72,6 +72,12 @@ class MCPToolAdapter:
     async def cleanup(self):
         '''입력/출력 스트림, 세션등 자원 해제(개발자 관리)'''
         # 세션이 존재하면 -> 세션 종료
+        try:
+            if self.session:
+                await self.session.__aexit__(None, None, None)
+        except Exception as e:
+            print('세션 종료 에러', e)
+
         # 컨텍스트가 존재하면 -> 입력/출력 스트림 종료
         try:
             if self._stdio_context:
