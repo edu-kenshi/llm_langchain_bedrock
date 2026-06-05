@@ -45,7 +45,7 @@ class BedrockMCPAgent:
 
         # LLM 생성
         print(f'LLM 초기화 중..')
-        self._init_llm()
+        await self._init_llm()
 
         # langgraph 기반 에이전트 구성
         print(f'langgraph agent 구성 중..')
@@ -155,18 +155,21 @@ class BedrockMCPAgent:
 async def main():
     # BedrockMCPAgent 에이전트 생성
     agent = BedrockMCPAgent() # 기본값 생성
-    try: # MCP 서버 연동 -> I/O -> 예외상황 
-        agent.initialize()
-        # 사용자 입력 대기(프럼프트 입력 대기) -> 무한루프? 1회성?
-        query = input('\n프럼프트 입력: ').strip()
-        # BedrockMCPAgent 에이전트의 `사용자 요청 처리` 함수 호출
-        if query:
-            await agent.process_query( query )
-    except Exception as e:
-        print('main() 오류 발생 {e}')
-    finally:
-        # 뒷정리
-        await agent.cleanup() # MCP 서버와 연결된 세션, 스트림 모두 해제 (컨셉)
+    await agent.initialize()
+    while True:
+        try: 
+            # MCP 서버 연동 -> I/O -> 예외상황             
+            # 사용자 입력 대기(프럼프트 입력 대기) -> 무한루프? 1회성?
+            query = input('\n프럼프트 입력: ').strip()
+            if query == 'q': break
+            # BedrockMCPAgent 에이전트의 `사용자 요청 처리` 함수 호출
+            if query:
+                await agent.process_query( query )
+        except Exception as e:
+            print(f'main() 오류 발생 {e}')
+    #finally:
+    # 뒷정리
+    await agent.cleanup() # MCP 서버와 연결된 세션, 스트림 모두 해제 (컨셉)
     pass
 
 # 5. 서비스가동
