@@ -25,8 +25,24 @@ class MCPToolAdapter:
         self.session: Optional[ClientSession] = None # 세션 맴버변수 -> 여러 함수에서 사용하겠다.
         self._stdio_context = None # 입출력에 관련한 내부적 프로레스 접근을 위한 컨텍스트 
         pass
-
+    
     # 초기화
+    async def initialize( self ):
+        '''MCP Server 연결, Tool 로드'''
+        # MCP Server 접속시 필요한 정보 세팅
+        server_params = StdioServerParameters(
+            command = sys.executable,
+            args    = [self.server_script],
+            env     = None
+        )
+        # 메세지가 오염되면 => 출력을 sys.stderr
+        print('MCP 서버 연결중..')
+        try:
+            
+        except Exception as e:
+            print('MCP 서버 연결 실패', e)
+            raise
+        pass
     
 
 # 4. 테스트
