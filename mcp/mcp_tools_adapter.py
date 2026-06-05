@@ -100,16 +100,63 @@ class MCPToolAdapter:
             tool_description = mcp_tool.description
             print( tool_name, tool_description )
             
+            # MCP TOOL을 호출할수 있는 형태 구성(인터페이스)
             # 함수의 형태 -> 동적으로 비동기 함수(도구의 외적 형태) 생성 -> MCPClient 예시
             # 클로저 형태로로 함수를 구성하여 각각의 함수가 독립적으로 생셩되게 구성
             def create_tool_func(name:str):
-                async def async_tool_func(**kwarg)->str:
+                async def async_tool_func(**kwargs)->str:
                     '''동적으로 생성되는 TOOL'''
-                    return await 
+                    return await self.call_tool( name, kwargs)
+                return async_tool_func
 
             tool_func = create_tool_func( tool_name )
+            
 
+            # LLM MCP 도구를 선택할때 판단할 수 있는 재료들
             # 함수의 스키마
+            tool_params = {}     # 매개변수 정보
+            required_fields = [] # 필수 매개변수
+
+            if hasattr(mcp_tool, "inputSchema") and mcp_tool.inputSchema: # 스키마 정보가 있다면
+                props    = mcp_tool.inputSchema.get('properties', {})
+                required = mcp_tool.inputSchema.get('required',   [])
+                
+                for param_name, param_info in props.items(): # 매개변수 이름(키), 정보(값)
+                    param_type = param_info.get('type', 'string')  # 매개변수명
+                    param_desc = param_info.get('description', '') # 매개변수설명
+                
+                    # param_name을 이용하여 기본값 설정
+                    if param_name in required: # 필수 항목에 파라미터명 있다면
+                        default = ... # 모든 정보 다 세팅
+                    else:
+                        default = None
+                    
+                    # 타입 변환
+                    if param_type == 'number':
+                        tool_params[ param_name ] = (
+                            float,
+                            Field(default=default, description=param_desc)
+                        )
+                        pass
+                    elif param_type == 'integer':
+                        tool_params[ param_name ] = (
+                            int,
+                            Field(default=default, description=param_desc)
+                        )
+                        pass
+                    elif param_type == 'boolean':
+                        tool_params[ param_name ] =(
+                            bool,
+                            Field(default=default, description=param_desc)
+                        )
+                        pass
+                    else:
+                        tool_params[ param_name ] = (
+                            str,
+                            Field(default=default, description=param_desc)
+                        )
+                        pass
+                    
 
             # pydantic 모델 동적 적용
 
