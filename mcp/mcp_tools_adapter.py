@@ -36,7 +36,7 @@ class MCPToolAdapter:
             env     = None
         )
         # 메세지가 오염되면 => 출력을 sys.stderr
-        print('MCP 서버 연결중..')
+        print('MCP 서버 연결중..', file=sys.stderr)
         try:
             # 입력, 출력, 세션등, 여러 함수에서 사용한다면 with x
             # MCP 서버를 접속할때 사용하는 내부 컨텍스트 객체
@@ -51,6 +51,7 @@ class MCPToolAdapter:
                 self.read_stream  = stdio_tuple
                 self.write_stream = stdio_tuple
 
+            print('MCP 스트림 생성 완료', file=sys.stderr)
             # 세션 획득(생성) => 툴을 가져올수 있음
             # JSON RPC 2.0 기준 상호 통신할수 있는 논리적인 상태(세션) 완성
             self.session = ClientSession(self.read_stream, self.write_stream)
@@ -58,14 +59,15 @@ class MCPToolAdapter:
             await self.session.__aenter__()
             # 세션 초기화
             await self.session.initialize()
+            print('MCP 세션 생성 완료', file=sys.stderr)
             # MCP 서버에게 Tool 목록 요청
             res = await self.session.list_tools()
             self.mcp_tools = res.tools
-            print(f'MCP 서버로부터 { len(self.mcp_tools) }개의 툴 로드됨')
+            print(f'MCP 서버로부터 { len(self.mcp_tools) }개의 툴 로드됨', file=sys.stderr)
             
             return self
         except Exception as e:
-            print('MCP 서버 연결 실패', e)
+            print('MCP 서버 연결 실패', e, file=sys.stderr)
             raise
         pass
     
@@ -76,14 +78,14 @@ class MCPToolAdapter:
             if self.session:
                 await self.session.__aexit__(None, None, None)
         except Exception as e:
-            print('세션 종료 에러', e)
+            print('세션 종료 에러', e, file=sys.stderr)
 
         # 컨텍스트가 존재하면 -> 입력/출력 스트림 종료
         try:
             if self._stdio_context:
                 await self._stdio_context.__aexit__(None, None, None)
         except Exception as e:
-            print('입력/출력 스트림 종료 에러', e)
+            print('입력/출력 스트림 종료 에러', e, file=sys.stderr)
         pass
 
 # 4. 테스트
