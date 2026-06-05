@@ -16,7 +16,7 @@ from langchain_core.tools import BaseTool
 from langgraph.graph import StateGraph, END, MessagesState
 from langgraph.prebuilt import ToolNode
 
-from mcp_tools_adapter import MCPClient
+from mcp_tools_adapter import MCPToolAdapter
 
 # 2. 환경변수 로드
 load_dotenv()
@@ -37,6 +37,8 @@ class BedrockMCPAgent:
         # MCP Tool 로드
         print(f'MCP Server와 연결중..')
         # mcp_tools_adapter.py와 작업 기술
+        self.mcp_adpater = MCPToolAdapter(self.server_script)
+        await self.mcp_adpater.initialize()
 
         # LLM 생성
         print(f'LLM 초기화 중..')
@@ -140,6 +142,10 @@ class BedrockMCPAgent:
             return msg
 
     # 메모리 정리(뒷정리)
+    async def cleanup(self):
+        '''뒷정리'''
+        if self.mcp_adpater:
+            await self.mcp_adpater.cleanup()
     pass
 
 # 4. 메인함수
@@ -155,6 +161,9 @@ async def main():
             await agent.process_query( query )
     except Exception as e:
         print('main() 오류 발생 {e}')
+    finally:
+        # 뒷정리
+        await agent.cleanup() # MCP 서버와 연결된 세션, 스트림 모두 해제 (컨셉)
     pass
 
 # 5. 서비스가동
