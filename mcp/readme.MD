@@ -57,3 +57,24 @@ execution=None
     - 매트릭
     - 대시보드
     - 분석
+
+# 랭스미스 설치
+## 가입
+- https://smith.langchain.com/ 접속
+- signup 후 login 
+- 구글 계정 활용등
+
+## API KEY 생성
+- 왼쪽 메뉴바 > settings > + API Key 클릭
+- 설명, 개인용. 만료일 지정 > 생성 > 카피
+```
+    lsv2_pt_53c5...
+```
+
+## .env 세팅(추가)
+```
+LANGCHAIN_API_KEY=lsv2_pt_53...
+LANGCHAIN_PROJECT=agent-mcp-llm
+LANGCHAIN_TRACING_V2=true
+```
+
