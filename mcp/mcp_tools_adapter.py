@@ -19,7 +19,7 @@ class MCPToolAdapter:
     def __init__(self, server_script: str = 'server.py'):
         self.server_script  = server_script
         self.mcp_tools      = []   #  mcp Tool
-        self.tools          = []   #  LangChain/LangGraph Tool
+        self.tools          = {}   #  LangChain/LangGraph Tool
         self.read_stream    = None # 입력 스트림 -> 여러 함수에서 사용하겠다.
         self.write_stream   = None # 출력 스트림 -> 여러 함수에서 사용하겠다.
         self.session: Optional[ClientSession] = None # 세션 맴버변수 -> 여러 함수에서 사용하겠다.
@@ -157,13 +157,42 @@ class MCPToolAdapter:
                         )
                         pass
                     
-
             # pydantic 모델 동적 적용
+            # 매개변수 => 클레스로 감까서 => 타입 제한에 대한 룰 구성
+            if tool_params:
+                args_schema = create_model(
+                    f'{tool_name}_args', # 모델 이름
+                    **tool_params        # 모든 도구의 매개변수가 세팅
+                )
+            else:
+                # 매개변수 없는 도구의 인자 형태 정의
+                class EmptyArgs(BaseModel): pass
+                args_schema = EmptyArgs
 
-            # StructuredTool 생성하여 랭체인 툴에 반영 적용 -> LLM이 툴에 대해 이해, 필요하면 사용(선택의 지표 제공)
-            pass
+            # StructuredTool => 랭체인 도구
+            # 재료 : 실행함수, 이름, 설명, 아규먼트 스키마
+            # 랭체인용 StructuredTool이는 객체로 매핑 => LLM이 도구로 사용 형태
+            # StructuredTool 생성하여 랭체인 툴에 반영 적용 -> LLM이 툴에 대해 이해, 필요하면 사용(선택의 지표 제공)    
+            try:
+                langchain_tool = StructuredTool.from_function(
+                    func        = tool_func,
+                    name        = tool_name,
+                    description = tool_description,             
+                    args_schema = args_schema,
+                    coroutine   = tool_func    # 비동기 함수 명시적 표현
+                )
+            except Exception as e:
+                langchain_tool = StructuredTool.from_function(
+                    func        = tool_func,
+                    name        = tool_name,
+                    description = tool_description,             
+                    args_schema = args_schema
+                )
+            langchain_tools.append(langchain_tool) # 도구를 하나 모아둠 -> 최종 도구 개수만큼 추가됨
+            # 관리상
+            self.tools[tool_name] = langchain_tool
 
-        return langchain_tools
+        return langchain_tools # 모든 도구를 반환
 
     async def cleanup(self):
         '''입력/출력 스트림, 세션등 자원 해제(개발자 관리)'''
