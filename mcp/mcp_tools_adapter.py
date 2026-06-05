@@ -51,6 +51,19 @@ class MCPToolAdapter:
                 self.read_stream  = stdio_tuple
                 self.write_stream = stdio_tuple
 
+            # 세션 획득(생성) => 툴을 가져올수 있음
+            # JSON RPC 2.0 기준 상호 통신할수 있는 논리적인 상태(세션) 완성
+            self.session = ClientSession(self.read_stream, self.write_stream)
+            # 실제 활성화를 위해 직접 호출
+            await self.session.__aenter__()
+            # 세션 초기화
+            await self.session.initialize()
+            # MCP 서버에게 Tool 목록 요청
+            res = await self.session.list_tools()
+            self.mcp_tools = res.tools
+            print(f'MCP 서버로부터 { len(self.mcp_tools) }개의 툴 로드됨')
+            
+            return self
         except Exception as e:
             print('MCP 서버 연결 실패', e)
             raise
